@@ -76,7 +76,6 @@ export const ListContainer = styled.section`
     padding: 3rem 2.5rem;
     min-width: 26.875rem;
     width: 100%;
-    height: 37.5rem;
     overflow: auto;
 
     display: flex;
@@ -85,24 +84,10 @@ export const ListContainer = styled.section`
     gap: 3.5rem;
 `
 
-export const Contact = styled.section`
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-
-    img[width='40'] {
-        border-radius: 12px;
-    }
-`
-
 export const ContactVariant = styled.section`
     display: flex;
     align-items: flex-start;
     justify-content: space-around;
-
-    img[width='40'] {
-        border-radius: 12px;
-    }
 
     section {
         gap: 1.5rem;
@@ -112,6 +97,20 @@ export const ContactVariant = styled.section`
         justify-content: flex-end;
         flex-direction: column;
     }
+`
+
+export const Category = styled.div`
+    height: 3.25rem;
+    max-width: 3.25rem;
+    width: 100%;
+    background-color: blue;
+    border-radius: 4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.25rem;
 `
 
 export const ContactContent = styled.div`

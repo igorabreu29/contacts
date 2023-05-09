@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { 
     MagnifyingGlass, 
     PencilSimple, 
     Plus, 
     Trash } from "phosphor-react";
 import { 
+    Category,
      ContactContent,
      ContactVariant,
      EditContainer,
@@ -13,95 +14,75 @@ import {
      ListContainer, 
     } from "./styles";
 
-import letterA from '../assets/letterA.jpg'
-import letterB from '../assets/letterB.jpg'
-import letterC from '../assets/letterC.jpg'
-import letterD from '../assets/letterD.jpg'
 import perfil from '../assets/perfil.jpg'
 import { AddContact } from '../components/AddContact';
-
-interface Equal {
-    id: number
-    perfilImage: string
-    name: string
-    number: string
-}
+import { useList } from '../hooks/useList';
 
 export interface ListContacts {
     id: number
-    letterImage: string
+    category: string
     perfilImage: string
     name: string
     number: string
-    contactEqual?: Equal[]
 }
-export function Home() {
 
-const [api, setApi] = useState<ListContacts[]>(
-[
-        {
-            id: Math.floor(Math.random() * 100),
-            letterImage: letterA,
-            perfilImage: perfil,
-            name: 'Abreu lol',
-            number: '(11) 98756-1234'
-        },
-        {
-            id: Math.floor(Math.random() * 100),
-            letterImage: letterB,
-            perfilImage: perfil,
-            name: 'Bacilo lola',
-            number: '(11) 98756-1234',
-            contactEqual: [{
+interface letterContact {
+    [x: string]: ListContacts[]
+}
+
+export function Home() {
+    const [api, setApi] = useState<ListContacts[]>(
+    [
+            {
                 id: Math.floor(Math.random() * 100),
+                category: 'A',
                 perfilImage: perfil,
-                name: 'Bobs mom',
-                number: '(11) 98756-1234',
-            }]
-        },
-        {
-            id: Math.floor(Math.random() * 100),
-            letterImage: letterC,
-            perfilImage: perfil,
-            name: 'Cris brew',
-            number: '(11) 98756-1234',
-            contactEqual: [{
+                name: 'Abreu lol',
+                number: '(11) 98756-1234'
+            },
+            {
                 id: Math.floor(Math.random() * 100),
+                category: 'B',
                 perfilImage: perfil,
-                name: 'Crow Bronwl',
+                name: 'Bacilo lola',
                 number: '(11) 98756-1234',
-            }]
-        },
-        {
-            id: Math.floor(Math.random() * 100),
-            letterImage: letterD,
-            perfilImage: perfil,
-            name: 'Dolly lala',
-            number: '(11) 98756-1234'
-        },
-    ]
-)
+            },
+        ]
+    )   
+    const [list, setList] = useState<letterContact>({})
+
     const [search, setSearch] = useState('')
     const [add, setAdd] = useState(false)
-    const filteredList = api.filter(data => data.name.toLowerCase().includes(search.toLowerCase()))
+    const {orderByName, groups} = useList()
 
+    // const filteredList = list.filter(data => data.name.toLowerCase().includes(search.toLowerCase()))
+
+    useEffect(() => {
+        setList(groups(orderByName(api)))
+    }, [api])   
+    
     function handleOpenSide() {
         setAdd(!add)
     }
 
     function addNewContact(nameState: string, numberState: string) {
-        const letterImages = api.find(item => item.letterImage === letterA)
-         
-        if (letterImages) {
-            const addNew: ListContacts[] = api.map(data => {
-                if ( data.letterImage == letterA ) ({
-                    ...data,
-                    contactEqual: data.contactEqual
-                })
-                return data
-            })
-            console.log(addNew)
+        if (nameState.length === 0 || numberState.length === 0) {
+            alert('Adicione valores')
+        } else {
+            const addContact: ListContacts = {
+                id: Math.floor(Math.random() * 100),
+                name: nameState,
+                number: numberState,
+                category: nameState.slice(0, 1).toUpperCase(),
+                perfilImage: perfil
+            }
+
+            setApi(state => [addContact, ...state])
         }
+    }
+
+    function handleOpenEdit() {
+        
     }
  
     return (
@@ -116,7 +97,7 @@ const [api, setApi] = useState<ListContacts[]>(
                             <button onClick={handleOpenSide}>
                                 <Plus size={24}/>
                             </button>
-                            <button>
+                            <button onClick={handleOpenEdit}>
                                 <PencilSimple size={24} />
                             </button>
                             <button>
@@ -140,12 +121,54 @@ const [api, setApi] = useState<ListContacts[]>(
                 </EditContainer>
 
                 <ListContainer>
-                    {search.length > 0 ? (
+                    {Object.keys(list).map((data) => {
+                        return (
+                            <ContactVariant key={Math.random()}>
+                                <Category>
+                                    {data}
+                                </Category>
+                                <section>
+                                    {list[data].map((datas) => {
+                                        return (
+                                            <ContactContent>
+                                                <img src={datas.perfilImage} alt="" width={48} height={48} />
+                                                <div>
+                                                    <h3>{datas.name}</h3>
+                                                    <span>{datas.number}</span>
+                                                </div>
+                                            </ContactContent>
+                                        )
+                                    })}
+                                </section>
+                            </ContactVariant>
+                        )
+                    })}
+                {/* {list.map(data => {
+                                return (
+                                <ContactVariant key={data.id}>
+                                    <Category>
+                                        {data.category}
+                                    </Category>
+                                    <section>
+                                        <ContactContent>
+                                            <img src={data.perfilImage} alt="" width={48} height={48} />
+                                                <div>
+                                                    <h3>{data.name}</h3>
+                                                    <span>{data.number}</span>
+                                                </div>
+                                            </ContactContent>
+                                    </section>
+                                </ContactVariant>
+                                )
+                            })} */}
+                    {/* {search.length > 0 ? (
                         <>
                         {filteredList.map(data => {
                             return (
                             <ContactVariant key={data.id}>
-                                <img src={data.letterImage} alt="" width={40} height={40}/>
+                                <Category>
+                                    {data.category}
+                                </Category>
                                 <section>
                                     <ContactContent>
                                         <img src={data.perfilImage} alt="" width={48} height={48} />
@@ -154,17 +177,6 @@ const [api, setApi] = useState<ListContacts[]>(
                                                 <span>{data.number}</span>
                                             </div>
                                         </ContactContent>
-                                        {data.contactEqual?.map(item => {
-                                            return (
-                                                <ContactContent key={item.id}>
-                                                    <img src={item.perfilImage} alt="" width={48} height={48} />
-                                                    <div>
-                                                        <h3>{item.name}</h3>
-                                                        <span>{item.number}</span>
-                                                    </div>
-                                                </ContactContent>
-                                            )
-                                        })}
                                 </section>
                             </ContactVariant>
                             )
@@ -172,10 +184,12 @@ const [api, setApi] = useState<ListContacts[]>(
                         </>
                     ) : (
                         <>
-                        {api.map(data => {
+                        {list.map(data => {
                             return (
                             <ContactVariant key={data.id}>
-                                <img src={data.letterImage} alt="" width={40} height={40}/>
+                                <Category>
+                                    {data.category}
+                                </Category>
                                 <section>
                                     <ContactContent>
                                         <img src={data.perfilImage} alt="" width={48} height={48} />
@@ -184,23 +198,12 @@ const [api, setApi] = useState<ListContacts[]>(
                                                 <span>{data.number}</span>
                                             </div>
                                         </ContactContent>
-                                        {data.contactEqual?.map(item => {
-                                            return (
-                                                <ContactContent key={item.id}>
-                                                    <img src={item.perfilImage} alt="" width={48} height={48} />
-                                                    <div>
-                                                        <h3>{item.name}</h3>
-                                                        <span>{item.number}</span>
-                                                    </div>
-                                                </ContactContent>
-                                            )
-                                        })}
                                 </section>
                             </ContactVariant>
                             )
                         })}
                     </>
-                    )}
+                    )} */}
                     </ListContainer>
                 </div>
 
