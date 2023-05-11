@@ -31,31 +31,36 @@ interface letterContact {
 }
 
 export function Home() {
-    const [api, setApi] = useState<ListContacts[]>(
-    [
-            {
-                id: Math.floor(Math.random() * 100),
-                category: 'A',
-                perfilImage: perfil,
-                name: 'Abreu lol',
-                number: '(11) 98756-1234'
-            },
-            {
-                id: Math.floor(Math.random() * 100),
-                category: 'B',
-                perfilImage: perfil,
-                name: 'Bacilo lola',
-                number: '(11) 98756-1234',
-            },
-        ]
-    )   
+    const [api, setApi] = useState<ListContacts[]>([
+      {
+        name: 'Igor',
+        category: 'I',
+        id: Math.ceil(Math.random() * 100),
+        number: '(91)999999999',
+        perfilImage: perfil
+      },
+      {
+        name: 'Igoru',
+        category: 'I',
+        id: Math.ceil(Math.random() * 100),
+        number: '(91)4838439434',
+        perfilImage: perfil
+      },
+      {
+        name: 'Abreu',
+        category: 'A',
+        id: Math.ceil(Math.random() * 100),
+        number: '(91)999999999',
+        perfilImage: perfil
+      },
+    ])   
     const [list, setList] = useState<letterContact>({})
 
     const [search, setSearch] = useState('')
     const [add, setAdd] = useState(false)
     const {orderByName, groups} = useList()
 
-    // const filteredList = list.filter(data => data.name.toLowerCase().includes(search.toLowerCase()))
+    const filteredList = api.filter(data => data.name.toLowerCase().includes(search.toLowerCase()))
 
     useEffect(() => {
         setList(groups(orderByName(api)))
@@ -77,12 +82,42 @@ export function Home() {
                 perfilImage: perfil
             }
 
-            setApi(state => [addContact, ...state])
+            setApi(state => [addContact, ...state]) 
         }
     }
 
     function handleOpenEdit() {
-        
+        if ( api.length === 0 ) {
+            alert("Adicione um contato antes de editar!")
+        } else {
+            const editContacts = {
+                name: prompt('Procure pelo nome'),
+            } as ListContacts
+            const foundContact = api.findIndex(item => item.name.toUpperCase() === editContacts.name.toUpperCase())
+    
+            if (foundContact !== -1) {
+                api[foundContact].name = prompt('O nome é: ', api[foundContact].name) as string
+                api[foundContact].number = prompt('O número é: ', api[foundContact].number) as string
+                api[foundContact].perfilImage = api[foundContact].perfilImage
+                api[foundContact].category = api[foundContact].name[0].toUpperCase()
+                setList(groups(orderByName(api)))
+            }
+        }
+    
+    }
+
+    function handleDelete() {
+        if ( api.length === 0 ) {
+            alert("Adicione um contato antes de deletar!")
+        } else {
+            const deleteContacts = {
+                name: prompt('Procure pelo nome'),
+            } as ListContacts
+    
+            const filterContacts = api.filter(item => item.name.toUpperCase() !== deleteContacts.name.toUpperCase())
+    
+            setApi(filterContacts)
+        }
     }
  
     return (
@@ -100,7 +135,7 @@ export function Home() {
                             <button onClick={handleOpenEdit}>
                                 <PencilSimple size={24} />
                             </button>
-                            <button>
+                            <button onClick={handleDelete}>
                                 <Trash size={24} />
                             </button>
                         </div>
@@ -121,46 +156,52 @@ export function Home() {
                 </EditContainer>
 
                 <ListContainer>
-                    {Object.keys(list).map((data) => {
-                        return (
-                            <ContactVariant key={Math.random()}>
+                    {search.length > 0 ? (
+                        <>
+                        {filteredList.map(data => {
+                            return (
+                            <ContactVariant key={data.id}>
                                 <Category>
-                                    {data}
+                                    {data.category}
                                 </Category>
                                 <section>
-                                    {list[data].map((datas) => {
-                                        return (
-                                            <ContactContent>
-                                                <img src={datas.perfilImage} alt="" width={48} height={48} />
-                                                <div>
-                                                    <h3>{datas.name}</h3>
-                                                    <span>{datas.number}</span>
-                                                </div>
-                                            </ContactContent>
-                                        )
-                                    })}
+                                    <ContactContent>
+                                        <img src={data.perfilImage} alt="" width={48} height={48} />
+                                            <div>
+                                                <h3>{data.name}</h3>
+                                                <span>{data.number}</span>
+                                            </div>
+                                        </ContactContent>
                                 </section>
                             </ContactVariant>
-                        )
-                    })}
-                {/* {list.map(data => {
-                                return (
-                                <ContactVariant key={data.id}>
+                            )
+                        })}
+                        </>
+                    ) : (
+                        <>
+                        {Object.keys(list).map((data) => {
+                            return (
+                                <ContactVariant key={Math.floor(Math.random() * 100)}>
                                     <Category>
-                                        {data.category}
+                                        {data}
                                     </Category>
                                     <section>
-                                        <ContactContent>
-                                            <img src={data.perfilImage} alt="" width={48} height={48} />
-                                                <div>
-                                                    <h3>{data.name}</h3>
-                                                    <span>{data.number}</span>
-                                                </div>
-                                            </ContactContent>
+                                        {list[data].map((datas) => {
+                                            return (
+                                                <ContactContent key={Math.floor(Math.random() * 100)}>
+                                                    <img src={datas.perfilImage} alt="" width={48} height={48} />
+                                                    <div>
+                                                        <h3>{datas.name}</h3>
+                                                        <span>{datas.number}</span>
+                                                    </div>
+                                                </ContactContent>
+                                            )
+                                        })}
                                     </section>
                                 </ContactVariant>
-                                )
-                            })} */}
+                         )})}
+                        </>
+                    )}
                     {/* {search.length > 0 ? (
                         <>
                         {filteredList.map(data => {

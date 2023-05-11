@@ -91,7 +91,6 @@ export const ContactVariant = styled.section`
 
     section {
         gap: 1.5rem;
-        flex: 1;
         display: flex;
         align-items: center;
         justify-content: flex-end;
@@ -113,14 +112,21 @@ export const Category = styled.div`
     font-size: 1.25rem;
 `
 
-export const ContactContent = styled.div`
-    flex: 1;
+export const ContactContent = styled.div`      
+    max-width: 13rem;
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 1.25rem;
 
     img {
         border-radius: 50%;
+    }
+
+    div {
+        gap: 0.5rem;
+        width: 100%;
+        word-break: break-all;
     }
 `
